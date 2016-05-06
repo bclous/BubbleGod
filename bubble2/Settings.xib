@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
@@ -9,6 +8,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SettingsView">
             <connections>
                 <outlet property="contentView" destination="iN0-l3-epB" id="8Bj-AJ-PSf"/>
+                <outlet property="playPauseIcon" destination="TcC-02-9Mc" id="3Gn-qs-7pA"/>
+                <outlet property="playPauseImage" destination="lPK-Ww-zxw" id="xLP-9x-sm0"/>
                 <outlet property="totalBubblesLabel" destination="Xxv-d9-56K" id="TGx-dq-8gp"/>
             </connections>
         </placeholder>
@@ -20,38 +21,44 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5ZO-eb-lQG">
                     <rect key="frame" x="0.0" y="0.0" width="599" height="129"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="100" translatesAutoresizingMaskIntoConstraints="NO" id="Nf5-nH-eXy">
-                            <rect key="frame" x="190" y="35" width="220" height="60"/>
-                            <subviews>
-                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="undo2" translatesAutoresizingMaskIntoConstraints="NO" id="lPK-Ww-zxw">
-                                    <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="60" id="2Go-6X-D4Q"/>
-                                        <constraint firstAttribute="width" constant="60" id="3sD-YD-NBK"/>
-                                    </constraints>
-                                </imageView>
-                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="clearAll2 2" translatesAutoresizingMaskIntoConstraints="NO" id="Ehe-jk-KWG">
-                                    <rect key="frame" x="160" y="0.0" width="60" height="60"/>
-                                    <gestureRecognizers/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="60" id="0aG-aU-Onf"/>
-                                        <constraint firstAttribute="height" constant="60" id="O4b-jF-iQQ"/>
-                                    </constraints>
-                                    <connections>
-                                        <outletCollection property="gestureRecognizers" destination="AdV-jq-1io" appends="YES" id="kva-UH-smq"/>
-                                    </connections>
-                                </imageView>
-                            </subviews>
-                        </stackView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Undo Last" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sHw-nW-bpj">
-                            <rect key="frame" x="191" y="107" width="58" height="14.5"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                        <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="undo2" translatesAutoresizingMaskIntoConstraints="NO" id="KWA-RB-ulr">
+                            <rect key="frame" x="40" y="45" width="40" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="40" id="Pev-UN-qRn"/>
+                                <constraint firstAttribute="height" constant="40" id="UPu-io-e0l"/>
+                            </constraints>
+                        </imageView>
+                        <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="clearAll2 2" translatesAutoresizingMaskIntoConstraints="NO" id="Ehe-jk-KWG">
+                            <rect key="frame" x="519" y="45" width="40" height="40"/>
+                            <gestureRecognizers/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="40" id="0aG-aU-Onf"/>
+                                <constraint firstAttribute="height" constant="40" id="O4b-jF-iQQ"/>
+                            </constraints>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="AdV-jq-1io" appends="YES" id="kva-UH-smq"/>
+                            </connections>
+                        </imageView>
+                        <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pauseIcon" translatesAutoresizingMaskIntoConstraints="NO" id="lPK-Ww-zxw" userLabel="playPause">
+                            <rect key="frame" x="280" y="45" width="40" height="40"/>
+                            <gestureRecognizers/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="2Go-6X-D4Q"/>
+                                <constraint firstAttribute="width" constant="40" id="3sD-YD-NBK"/>
+                            </constraints>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="5X9-Lm-g44" appends="YES" id="VuF-PG-MzC"/>
+                            </connections>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Undo Last" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Og-Vy-s8F">
+                            <rect key="frame" x="30" y="93" width="61" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Clear All" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ibV-EU-gnS">
-                            <rect key="frame" x="356" y="107" width="47.5" height="14.5"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Clear All" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eVh-PT-t4G">
+                            <rect key="frame" x="514" y="92" width="51" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             <nil key="highlightedColor"/>
                         </label>
@@ -59,12 +66,16 @@
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
                     <constraints>
-                        <constraint firstItem="Nf5-nH-eXy" firstAttribute="centerY" secondItem="5ZO-eb-lQG" secondAttribute="centerY" id="0Mw-KY-def"/>
-                        <constraint firstItem="sHw-nW-bpj" firstAttribute="centerX" secondItem="lPK-Ww-zxw" secondAttribute="centerX" id="DKJ-4B-okf"/>
-                        <constraint firstItem="ibV-EU-gnS" firstAttribute="top" secondItem="Ehe-jk-KWG" secondAttribute="bottom" constant="12" id="Wzc-ZI-ziM"/>
-                        <constraint firstItem="ibV-EU-gnS" firstAttribute="centerX" secondItem="Ehe-jk-KWG" secondAttribute="centerX" id="dlk-DO-ccS"/>
-                        <constraint firstItem="Nf5-nH-eXy" firstAttribute="centerX" secondItem="5ZO-eb-lQG" secondAttribute="centerX" id="qk9-Be-oh4"/>
-                        <constraint firstItem="sHw-nW-bpj" firstAttribute="top" secondItem="lPK-Ww-zxw" secondAttribute="bottom" constant="12" id="wu6-of-AxU"/>
+                        <constraint firstItem="eVh-PT-t4G" firstAttribute="centerX" secondItem="Ehe-jk-KWG" secondAttribute="centerX" id="ADd-vT-Jt4"/>
+                        <constraint firstItem="lPK-Ww-zxw" firstAttribute="centerX" secondItem="5ZO-eb-lQG" secondAttribute="centerX" id="DLV-FO-hOW"/>
+                        <constraint firstItem="Ehe-jk-KWG" firstAttribute="centerY" secondItem="5ZO-eb-lQG" secondAttribute="centerY" id="Fjb-Aw-wPu"/>
+                        <constraint firstItem="1Og-Vy-s8F" firstAttribute="centerX" secondItem="KWA-RB-ulr" secondAttribute="centerX" id="KS4-6A-IIn"/>
+                        <constraint firstAttribute="trailing" secondItem="Ehe-jk-KWG" secondAttribute="trailing" constant="40" id="Kra-Uz-yGF"/>
+                        <constraint firstItem="1Og-Vy-s8F" firstAttribute="top" secondItem="KWA-RB-ulr" secondAttribute="bottom" constant="8" id="OvH-cd-qKL"/>
+                        <constraint firstItem="KWA-RB-ulr" firstAttribute="leading" secondItem="5ZO-eb-lQG" secondAttribute="leading" constant="40" id="Q01-5S-Faa"/>
+                        <constraint firstItem="eVh-PT-t4G" firstAttribute="top" secondItem="Ehe-jk-KWG" secondAttribute="bottom" constant="7" id="SHh-qt-wGr"/>
+                        <constraint firstItem="KWA-RB-ulr" firstAttribute="centerY" secondItem="5ZO-eb-lQG" secondAttribute="centerY" id="SyT-cF-AUS"/>
+                        <constraint firstItem="lPK-Ww-zxw" firstAttribute="centerY" secondItem="5ZO-eb-lQG" secondAttribute="centerY" id="eQt-kk-BKK"/>
                     </constraints>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5xP-fi-QJb" appends="YES" id="X9b-eS-MdD"/>
@@ -76,19 +87,27 @@
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Pause" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TcC-02-9Mc">
+                    <rect key="frame" x="282" y="90" width="37" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="Xxv-d9-56K" firstAttribute="top" secondItem="5ZO-eb-lQG" secondAttribute="bottom" constant="33" id="Dvt-Wm-M0N"/>
                 <constraint firstItem="5ZO-eb-lQG" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="HmS-lc-YQ1"/>
                 <constraint firstItem="5ZO-eb-lQG" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" multiplier="0.6" id="MUI-0E-WQf"/>
+                <constraint firstItem="TcC-02-9Mc" firstAttribute="centerX" secondItem="lPK-Ww-zxw" secondAttribute="centerX" id="eeo-3R-OMD"/>
                 <constraint firstAttribute="trailing" secondItem="5ZO-eb-lQG" secondAttribute="trailing" id="lB4-po-UNt"/>
                 <constraint firstItem="5ZO-eb-lQG" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="lMK-qc-2Zm"/>
                 <constraint firstItem="Xxv-d9-56K" firstAttribute="centerX" secondItem="5ZO-eb-lQG" secondAttribute="centerX" id="ogD-Y1-3jN"/>
                 <constraint firstAttribute="bottom" secondItem="Xxv-d9-56K" secondAttribute="bottom" constant="32" id="wq7-NN-zVd"/>
+                <constraint firstItem="TcC-02-9Mc" firstAttribute="top" secondItem="lPK-Ww-zxw" secondAttribute="bottom" constant="5" id="zpY-6O-T9q"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="377.5" y="303.5"/>
+            <point key="canvasLocation" x="368.5" y="319.5"/>
         </view>
         <tapGestureRecognizer id="AdV-jq-1io">
             <connections>
@@ -100,9 +119,15 @@
                 <action selector="undoButtonTapped:" destination="-1" id="aVs-w7-KYK"/>
             </connections>
         </tapGestureRecognizer>
+        <tapGestureRecognizer id="5X9-Lm-g44">
+            <connections>
+                <action selector="pausePlayButtonTapped:" destination="-1" id="dEH-X7-8TR"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="clearAll2 2" width="256" height="256"/>
+        <image name="pauseIcon" width="512" height="512"/>
         <image name="undo2" width="256" height="256"/>
     </resources>
 </document>

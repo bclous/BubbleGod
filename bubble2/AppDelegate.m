@@ -45,7 +45,7 @@
     
     NSLog(@"were in app coming backin app delegate");
     
-       [[NSNotificationCenter defaultCenter] postNotificationName:@"appComingBack" object:nil];
+      // [[NSNotificationCenter defaultCenter] postNotificationName:@"appComingBack" object:nil];
     
 }
 

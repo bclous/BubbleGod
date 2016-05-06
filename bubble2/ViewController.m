@@ -69,6 +69,8 @@
 
 @property (nonatomic) CGFloat animationConstant;
 
+@property (strong, nonatomic) NSMutableArray *bubblesMadeWhilePaused;
+
 
 
 
@@ -136,6 +138,7 @@
 
 -(void)leaveBubbleView
 {
+    NSLog(@"in leave bubble view");
     
     self.shouldAnimate = NO;
     
@@ -145,6 +148,8 @@
         [bubble removeFromSuperview];
         
     }
+    
+
     
 }
 
@@ -195,6 +200,7 @@
     
     self.allBubbles = [[NSMutableArray alloc] init];
     self.recreatedBubbles = [[NSMutableArray alloc] init];
+    self.bubblesMadeWhilePaused = [[NSMutableArray alloc] init];
     
     self.shouldAnimate = YES;
     
@@ -247,6 +253,13 @@
     self.speedViewDisplayed = NO;
     self.sizeViewDisplayed = NO;
     
+    [self bringTabBarToFront];
+
+}
+
+
+-(void)bringTabBarToFront
+{
     [self.view bringSubviewToFront:self.backgroundView];
     [self.view bringSubviewToFront:self.sizeView];
     [self.view bringSubviewToFront:self.speedView];
@@ -255,6 +268,7 @@
     [self.view bringSubviewToFront:self.mainCircleView];
 
 }
+
 
 
 
@@ -293,56 +307,45 @@
     
     [self.allBubbles addObject:newBubble];
     
-    [self.view bringSubviewToFront:self.backgroundView];
-    [self.view bringSubviewToFront:self.sizeView];
-    [self.view bringSubviewToFront:self.speedView];
-    [self.view bringSubviewToFront:self.settingsView];
-    [self.view bringSubviewToFront:self.tabBar];
-    [self.view bringSubviewToFront:self.mainCircleView];
+    [self bringTabBarToFront];
+    
+    if (!self.shouldAnimate)
+    {
+        [self.bubblesMadeWhilePaused addObject:newBubble];
+        
+        NSLog(@"there are now %lu  bubbles in bubblesMadeWhilePaused", self.bubblesMadeWhilePaused.count);
 
-    
-    if (self.behaviorIndex == 1)
-    {
-         [self animateBubbleFromTopToBottom:newBubble originX:newOriginX originY:newOriginY];
+      
     }
     
-    else if (self.behaviorIndex == 2)
-    {
-         [self animateBubbleFromLeftToRight:newBubble originX:newOriginX originY:newOriginY];
-    }
-    
-    else if (self.behaviorIndex == 3)
-    {
-        [self animateBubbleFromBottomLeftToTopRight:newBubble originX:newOriginX originY:newOriginY];
-    }
-    
-    else if (self.behaviorIndex == 4)
-    {
-        [self animateBubbleFromBottomRightToTopLeft:newBubble originX:newOriginX originY:newOriginY];
-    }
     else
     {
-        [self animateBubbleToRandomSpot:newBubble originX:newOriginX originY:newOriginY];
-    }
-    
-    
-    for (Bubble *bubble in self.allBubbles)
-    {
-        if (!([bubble isEqual:newBubble]))
+        [self animateBubble:newBubble];
+        
+        
+        for (Bubble *bubble in self.allBubbles)
+        {
+            if (!([bubble isEqual:newBubble]))
+                
+                NSLog(@"this for statement in create bubble getting called");
             
-            NSLog(@"this for statement in create bubble getting called");
+            bubble.currentX = [[bubble.layer presentationLayer] frame].origin.x;
+            bubble.currentY = [[bubble.layer presentationLayer] frame].origin.y;
+            bubble.savedMovingUpOrRight = bubble.movingUpOrRight;
+            
+        }
         
-        bubble.currentX = [[bubble.layer presentationLayer] frame].origin.x;
-        bubble.currentY = [[bubble.layer presentationLayer] frame].origin.y;
-        bubble.savedMovingUpOrRight = bubble.movingUpOrRight;
         
+        newBubble.currentX = newOriginX;
+        newBubble.currentY = newOriginY;
     }
-    
-    
-    newBubble.currentX = newOriginX;
-    newBubble.currentY = newOriginY;
     
     self.settingsView.totalBubblesLabel.text = [NSString stringWithFormat:@"Total Bubbles: %lu",self.allBubbles.count];
+    
+    
+
+    
+
    
     
 }
@@ -374,35 +377,47 @@
     
     [self.recreatedBubbles addObject:newBubble];
     
-    [self.view bringSubviewToFront:self.backgroundView];
-    [self.view bringSubviewToFront:self.sizeView];
-    [self.view bringSubviewToFront:self.speedView];
-    [self.view bringSubviewToFront:self.settingsView];
-    [self.view bringSubviewToFront:self.tabBar];
-    [self.view bringSubviewToFront:self.mainCircleView];
+    [self bringTabBarToFront];
     
-    if (newBubble.behaviorIndex == 1)
-    {
-        [self animateBubbleFromTopToBottom:newBubble originX:originX originY:originY];
-    }
+    [self animateBubble:newBubble];
     
-    else if (newBubble.behaviorIndex == 2)
-    {
-        [self animateBubbleFromLeftToRight:newBubble originX:originX originY:originY];
-    }
+    self.settingsView.totalBubblesLabel.text = [NSString stringWithFormat:@"Total Bubbles: %lu",self.allBubbles.count];
     
-    else if (newBubble.behaviorIndex == 3)
-    {
-        [self animateBubbleFromBottomLeftToTopRight:newBubble originX:originX originY:originY];
-    }
     
-    else if (newBubble.behaviorIndex == 4)
+    
+}
+
+-(void)animateBubble:(Bubble *)bubble
+{
+    
+    if (self.shouldAnimate)
     {
-        [self animateBubbleFromBottomRightToTopLeft:newBubble originX:originX originY:originY];
-    }
-    else
-    {
-        [self animateBubbleToRandomSpot:newBubble originX:originX originY:originY];
+    
+        if (bubble.behaviorIndex == 1)
+        {
+            [self animateBubbleFromTopToBottom:bubble originX:bubble.currentX originY:bubble.currentY];
+        }
+        
+        else if (bubble.behaviorIndex == 2)
+        {
+            [self animateBubbleFromLeftToRight:bubble originX:bubble.currentX originY:bubble.currentY];
+        }
+        
+        else if (bubble.behaviorIndex == 3)
+        {
+            
+            [self animateBubbleToRandomSpot:bubble originX:bubble.currentX originY:bubble.currentY];
+        }
+        
+        else if (bubble.behaviorIndex == 4)
+        {
+            [self animateBubbleFromBottomRightToTopLeft:bubble originX:bubble.currentX originY:bubble.currentY];
+        }
+        else
+        {
+            [self animateBubbleFromBottomLeftToTopRight:bubble originX:bubble.currentX originY:bubble.currentY];
+        }
+        
     }
     
     
@@ -825,6 +840,36 @@
     CGFloat max = height - diameter;
     
     return max;
+    
+}
+
+-(void)pauseBubbles
+{
+    for (Bubble *bubble in self.allBubbles)
+    {
+        [self pauseLayer:bubble.layer];
+    }
+    
+    self.shouldAnimate = NO;
+}
+
+-(void)resumeBubbles
+{
+    
+    self.shouldAnimate = YES;
+    
+    for (Bubble *bubble in self.allBubbles)
+    {
+        [self resumeLayer:bubble.layer];
+        
+    }
+    
+    for (Bubble *bubble in self.bubblesMadeWhilePaused)
+    {
+        [self animateBubble:bubble];
+    }
+    
+    [self.bubblesMadeWhilePaused removeAllObjects];
     
 }
 
@@ -1897,6 +1942,9 @@
 
 
 
+
+
+
 // Background view delegate methods
 
 -(void)colorBackgroundButtonTapped
@@ -1989,6 +2037,7 @@
     [self.allBubbles removeObject:lastBubble];
     
      self.settingsView.totalBubblesLabel.text = [NSString stringWithFormat:@"Total Bubbles: %lu",self.allBubbles.count];
+
 }
 
 -(void)clearAllBubblesTapped
@@ -2002,6 +2051,21 @@
     [self.allBubbles removeAllObjects];
     
      self.settingsView.totalBubblesLabel.text = [NSString stringWithFormat:@"Total Bubbles: %lu",self.allBubbles.count];
+    
+    
+}
+
+-(void)pausePlayButtonTapped
+{
+    
+    if (self.shouldAnimate)
+    {
+        [self pauseBubbles];
+    }
+    else
+    {
+        [self resumeBubbles];
+    }
     
 }
 
@@ -2018,6 +2082,8 @@
 -(void)behaviorChosen:(NSInteger)behaviorIndex
 {
     self.behaviorIndex = behaviorIndex;
+    
+   
 }
 
 

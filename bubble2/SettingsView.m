@@ -11,6 +11,9 @@
 @interface SettingsView ()
 
 @property (strong, nonatomic) IBOutlet UIView *contentView;
+@property (nonatomic) BOOL isAnimating;
+@property (weak, nonatomic) IBOutlet UIImageView *playPauseImage;
+@property (weak, nonatomic) IBOutlet UILabel *playPauseIcon;
 
 
 
@@ -52,6 +55,10 @@
     
     self.contentView.frame = self.bounds;
     
+    self.isAnimating = YES;
+    self.playPauseImage.image = [UIImage imageNamed:@"pauseIcon"];
+    self.playPauseIcon.text = @"Pause";
+    
     
 }
 
@@ -63,7 +70,34 @@
 }
 - (IBAction)clearAllButtonTapped:(id)sender
 {
+    
     [self.delegate clearAllBubblesTapped];
+    
+}
+- (IBAction)pausePlayButtonTapped:(id)sender
+{
+    
+    if (self.isAnimating)
+    {
+        self.playPauseImage.image = [UIImage imageNamed:@"playIcon"];
+        
+        self.playPauseIcon.text = @"Play";
+        
+        self.isAnimating = NO;
+        
+        
+    }
+    else
+    {
+        self.playPauseImage.image = [UIImage imageNamed:@"pauseIcon"];
+        
+        self.playPauseIcon.text = @"Pause";
+        
+        self.isAnimating = YES;
+    }
+    
+    [self.delegate pausePlayButtonTapped];
+    
 }
 
 

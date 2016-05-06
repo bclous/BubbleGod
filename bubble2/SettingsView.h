@@ -12,6 +12,7 @@
 
 -(void)undoLastBubbleTapped;
 -(void)clearAllBubblesTapped;
+-(void)pausePlayButtonTapped;
 
 @end
 
