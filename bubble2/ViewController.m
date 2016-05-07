@@ -61,9 +61,13 @@
 @property (nonatomic) NSInteger behaviorIndex;
 
 @property (nonatomic) BOOL shouldAnimate;
+@property (nonatomic) BOOL isPaused;
+@property (nonatomic) BOOL isPausedFromResignActive;
+@property (nonatomic) BOOL appWasDismissed;
 
 @property (strong, nonatomic) NSMutableArray *allBubbles;
 @property (strong, nonatomic) NSMutableArray *recreatedBubbles;
+@property (strong, nonatomic) NSMutableArray *recreatedBubblesWhilePaused;
 
 @property (strong, nonatomic) UITapGestureRecognizer *mainTap;
 
@@ -100,24 +104,64 @@
     
     [self resetView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appResigning) name:@"appResigning" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appComingBack) name:@"appComingBack" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resignActive) name:@"resignActiveCalled" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground) name:@"didEnterBackgroundCalled" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willEnterForeground) name:@"willEnterForegroundCalled" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive) name:@"didBecomeActiveCalled" object:nil];
 
 
 }
 
--(void)appResigning
+
+
+-(void)resignActive
 {
-    NSLog(@"in app resigning");
+    
+    NSLog(@"In resign active the beginning: \n\nself.isPaused is %d\nself.isPausedFromResignActive is %d\nself.shouldAnimate is %d\n", self.isPaused, self.isPausedFromResignActive, self.shouldAnimate);
+    
+    
+    self.isPausedFromResignActive = YES;
+    
+    if (!self.isPaused)
+    {
+        [self pauseBubbles];
+        
+        self.isPaused = NO;
+    }
+    
+     NSLog(@"In resign active at the end: \n\nself.isPaused is %d\nself.isPausedFromResignActive is %d\nself.shouldAnimate is %d", self.isPaused, self.isPausedFromResignActive, self.shouldAnimate);
+    
+    
+}
+
+-(void)didBecomeActive
+{
+
+    
+    
+    if (self.isPausedFromResignActive && !self.isPaused && !self.appWasDismissed)
+    {
+        [self resumeBubbles];
+        
+    }
+    
+    self.isPausedFromResignActive = NO;
+    self.appWasDismissed = NO;
+
+}
+
+-(void)willEnterForeground
+{
+    [self recreateBubbleView];
+}
+
+-(void)didEnterBackground
+{
+    
     [self leaveBubbleView];
     
-}
-
--(void)appComingBack
-{
+    self.appWasDismissed = YES;
     
-    [self recreateBubbleView];
-
 }
 
 
@@ -131,14 +175,16 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
 
+  
     [self leaveBubbleView];
+    
+    
     
 }
 
 
 -(void)leaveBubbleView
 {
-    NSLog(@"in leave bubble view");
     
     self.shouldAnimate = NO;
     
@@ -148,15 +194,11 @@
         [bubble removeFromSuperview];
         
     }
-    
 
-    
 }
 
 -(void)recreateBubbleView
 {
-    
-    NSLog(@"back in recreate view");
     
     self.shouldAnimate = YES;
     
@@ -164,8 +206,7 @@
     {
         
         [self recreateBubbleAtOriginX:bubble.currentX originY:bubble.currentY behavior:bubble.behaviorIndex diamater:bubble.diameter color:bubble.color speed:bubble.speed upOrRight:bubble.savedMovingUpOrRight currentX:bubble.currentX currentY:bubble.currentY];
-        
-        NSLog(@"saved direction is %d", bubble.savedMovingUpOrRight);
+    
         
     }
     
@@ -178,6 +219,7 @@
     }
     
     [self.recreatedBubbles removeAllObjects];
+    
 }
 
 -(void)setUpMainView
@@ -201,9 +243,11 @@
     self.allBubbles = [[NSMutableArray alloc] init];
     self.recreatedBubbles = [[NSMutableArray alloc] init];
     self.bubblesMadeWhilePaused = [[NSMutableArray alloc] init];
+    self.recreatedBubblesWhilePaused = [[NSMutableArray alloc] init];
     
     self.shouldAnimate = YES;
-    
+    self.isPaused = NO;
+    self.isPausedFromResignActive = NO;
     
 }
 
@@ -211,8 +255,6 @@
 
 -(void)mainViewTap
 {
-    
-    NSLog(@"Main view tap recognized");
     
     CGPoint locationOfTap = [self.mainTap locationInView:self.view];
     
@@ -309,13 +351,9 @@
     
     [self bringTabBarToFront];
     
-    if (!self.shouldAnimate)
+    if (self.isPaused)
     {
         [self.bubblesMadeWhilePaused addObject:newBubble];
-        
-        NSLog(@"there are now %lu  bubbles in bubblesMadeWhilePaused", self.bubblesMadeWhilePaused.count);
-
-      
     }
     
     else
@@ -326,8 +364,6 @@
         for (Bubble *bubble in self.allBubbles)
         {
             if (!([bubble isEqual:newBubble]))
-                
-                NSLog(@"this for statement in create bubble getting called");
             
             bubble.currentX = [[bubble.layer presentationLayer] frame].origin.x;
             bubble.currentY = [[bubble.layer presentationLayer] frame].origin.y;
@@ -371,15 +407,22 @@
     newBubble.speed = speed;
     newBubble.behaviorIndex = behavior;
     
-    newBubble.userInteractionEnabled = NO;
-    
     [self.view addSubview:newBubble];
     
     [self.recreatedBubbles addObject:newBubble];
     
     [self bringTabBarToFront];
     
-    [self animateBubble:newBubble];
+    if (!self.isPaused)
+    {
+         [self animateBubble:newBubble];
+    }
+    else
+    {
+        [self.recreatedBubblesWhilePaused addObject:newBubble];
+    }
+    
+   
     
     self.settingsView.totalBubblesLabel.text = [NSString stringWithFormat:@"Total Bubbles: %lu",self.allBubbles.count];
     
@@ -390,8 +433,7 @@
 -(void)animateBubble:(Bubble *)bubble
 {
     
-    if (self.shouldAnimate)
-    {
+  
     
         if (bubble.behaviorIndex == 1)
         {
@@ -418,7 +460,7 @@
             [self animateBubbleFromBottomLeftToTopRight:bubble originX:bubble.currentX originY:bubble.currentY];
         }
         
-    }
+
     
     
     
@@ -428,7 +470,7 @@
 -(void)animateBubbleFromLeftToRight:(Bubble *)bubble originX:(CGFloat)originX originY:(CGFloat)originY
 {
     
-    if (self.shouldAnimate && !bubble.speed == 0)
+    if (self.shouldAnimate &&!bubble.speed == 0)
     {
     
     
@@ -845,18 +887,26 @@
 
 -(void)pauseBubbles
 {
+    
     for (Bubble *bubble in self.allBubbles)
     {
         [self pauseLayer:bubble.layer];
+        
+            bubble.currentX = [[bubble.layer presentationLayer] frame].origin.x;
+            bubble.currentY = [[bubble.layer presentationLayer] frame].origin.y;
+            bubble.savedMovingUpOrRight = bubble.movingUpOrRight;
+            
+
     }
     
-    self.shouldAnimate = NO;
+    self.isPaused = YES;
+    
 }
 
 -(void)resumeBubbles
 {
     
-    self.shouldAnimate = YES;
+    self.isPaused = NO;
     
     for (Bubble *bubble in self.allBubbles)
     {
@@ -869,16 +919,20 @@
         [self animateBubble:bubble];
     }
     
+    for (Bubble *bubble in self.recreatedBubblesWhilePaused)
+    {
+        [self animateBubble:bubble];
+    }
+    
     [self.bubblesMadeWhilePaused removeAllObjects];
+    [self.recreatedBubblesWhilePaused removeAllObjects];
     
 }
 
 
 -(void)pauseLayer:(CALayer*)layer
 {
-    
-    NSLog(@"pause layer getting called");
-    
+
     CFTimeInterval pausedTime = [layer convertTime:CACurrentMediaTime() fromLayer:nil];
     layer.speed = 0.0;
     layer.timeOffset = pausedTime;
@@ -2003,8 +2057,6 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info
 {
     
-    NSLog(@"this got called");
-    
     self.backgroundImageView.image = info[@"UIImagePickerControllerOriginalImage"];
     
     [self dismissViewControllerAnimated:self.imagePicker completion:^{
@@ -2018,7 +2070,6 @@
 }
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    NSLog(@"this cancel got called");
     
     [self dismissViewControllerAnimated:self.imagePicker completion:^{
         // some code
@@ -2058,13 +2109,17 @@
 -(void)pausePlayButtonTapped
 {
     
-    if (self.shouldAnimate)
+    if (self.isPaused)
     {
-        [self pauseBubbles];
+        [self resumeBubbles];
+        
+        self.isPaused = NO;
     }
     else
     {
-        [self resumeBubbles];
+        [self pauseBubbles];
+        
+        self.isPaused = YES;
     }
     
 }

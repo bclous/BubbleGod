@@ -22,8 +22,9 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    NSLog(@"we're in resign active");
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"appResigning" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"resignActiveCalled" object:nil];
+    
+    NSLog(@"app will resign active called");
     
  
     
@@ -36,14 +37,21 @@
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
+     [[NSNotificationCenter defaultCenter] postNotificationName:@"didEnterBackgroundCalled" object:nil];
+    
+    NSLog(@"app did enter background called");
     
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
+     NSLog(@"app will enter foreground called");
+    
     
     NSLog(@"were in app coming backin app delegate");
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"willEnterForegroundCalled" object:nil];
     
       // [[NSNotificationCenter defaultCenter] postNotificationName:@"appComingBack" object:nil];
     
@@ -54,7 +62,7 @@
     
     NSLog(@"application did become active called");
     
-     [[NSNotificationCenter defaultCenter] postNotificationName:@"appComingBack" object:nil];
+     [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeActiveCalled" object:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
