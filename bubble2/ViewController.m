@@ -267,22 +267,30 @@
     
     BOOL subViewDisplayed = (self.backgroundViewDisplayed || self.speedViewDisplayed || self.settingsViewDisplayed || self.sizeViewDisplayed);
     
-    if (subViewDisplayed && isOutsideSubMenus)
-    {
-        [self circleTapped];
-    }
+    NSLog(@"main view tapped");
     
-    else if (!self.circleSmall && !subViewDisplayed )
-    {
-        [self circleTapped];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if (subViewDisplayed && isOutsideSubMenus)
+        {
+            [self circleTapped];
+        }
+        
+        else if (!self.circleSmall && !subViewDisplayed )
+        {
+            [self circleTapped];
+        }
+        
+        else if (self.circleSmall)
+        {
+            
+            [self createBubbleAtOriginX:x originY:y];
+            self.tapScreenLabel.alpha = 0;
+        }
+
+        
+    });
     
-    else if (self.circleSmall)
-    {
-    
-          [self createBubbleAtOriginX:x originY:y];
-          self.tapScreenLabel.alpha = 0;
-    }
     
 }
 
